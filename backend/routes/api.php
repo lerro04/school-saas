@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\StaffController;
 use App\Http\Controllers\Api\PayrollController;
 use App\Http\Controllers\Api\ReportController;
+use App\Http\Controllers\Api\PaynowController;
 
 // Public auth routes
 Route::prefix('auth')->group(function () {
@@ -20,6 +21,15 @@ Route::prefix('auth')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/auth/me',      [AuthController::class, 'me']);
+
+    // Paynow
+Route::prefix('paynow')->group(function () {
+    Route::post('/initiate', [PaynowController::class, 'initiate']);
+    Route::post('/poll',     [PaynowController::class, 'poll']);
+});
+
+// Paynow webhook - no auth needed (called by Paynow servers)
+Route::post('/paynow/webhook', [PaynowController::class, 'webhook']);
 
     // Staff
 Route::apiResource('staff', StaffController::class);
