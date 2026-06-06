@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\TenantController;
+use App\Http\Controllers\Api\StudentController;
+use App\Http\Controllers\Api\FeeInvoiceController;
+use App\Http\Controllers\Api\PaymentController;
 use Illuminate\Support\Facades\Route;
 
 // Public auth routes
@@ -14,6 +17,16 @@ Route::prefix('auth')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/auth/me',      [AuthController::class, 'me']);
+
+    // Students
+    Route::apiResource('students', StudentController::class);
+
+    // Fee Invoices
+    Route::post('/fee-invoices/bulk', [FeeInvoiceController::class, 'bulkCreate']);
+    Route::apiResource('fee-invoices', FeeInvoiceController::class);
+
+    // Payments
+    Route::apiResource('payments', PaymentController::class)->only(['index', 'store', 'show']);
 
     // Super admin only
     Route::middleware('role:super-admin')->prefix('admin')->group(function () {
