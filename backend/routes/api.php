@@ -6,6 +6,8 @@ use App\Http\Controllers\Api\StudentController;
 use App\Http\Controllers\Api\FeeInvoiceController;
 use App\Http\Controllers\Api\PaymentController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\StaffController;
+use App\Http\Controllers\Api\PayrollController;
 
 // Public auth routes
 Route::prefix('auth')->group(function () {
@@ -17,6 +19,13 @@ Route::prefix('auth')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/auth/me',      [AuthController::class, 'me']);
+
+    // Staff
+Route::apiResource('staff', StaffController::class);
+
+// Payroll
+Route::post('/payroll/mark-paid', [PayrollController::class, 'markPaid']);
+Route::apiResource('payroll', PayrollController::class);
 
     // Students
     Route::apiResource('students', StudentController::class);
