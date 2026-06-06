@@ -8,22 +8,19 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateTenantsTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up(): void
-{
-    Schema::create('classes', function (Blueprint $table) {
-        $table->id();
-        $table->string('name'); // e.g. "Form 1A"
-        $table->string('level'); // e.g. "Form 1"
-        $table->string('stream')->nullable(); // e.g. "A", "B"
-        $table->unsignedBigInteger('teacher_id')->nullable();
-        $table->integer('capacity')->default(40);
-        $table->string('academic_year'); // e.g. "2026"
-        $table->timestamps();
-    });
-}
+    {
+        Schema::create('tenants', function (Blueprint $table) {
+            $table->string('id')->primary();
+            $table->string('name')->nullable();
+            $table->string('email')->nullable();
+            $table->json('data')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('tenants');
+    }
 }
