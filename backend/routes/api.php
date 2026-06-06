@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\PaymentController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\StaffController;
 use App\Http\Controllers\Api\PayrollController;
+use App\Http\Controllers\Api\ReportController;
 
 // Public auth routes
 Route::prefix('auth')->group(function () {
@@ -36,6 +37,15 @@ Route::apiResource('payroll', PayrollController::class);
 
     // Payments
     Route::apiResource('payments', PaymentController::class)->only(['index', 'store', 'show']);
+
+    // Reports
+Route::prefix('reports')->group(function () {
+    Route::get('/dashboard',            [ReportController::class, 'dashboard']);
+    Route::get('/fee-collection',       [ReportController::class, 'feeCollection']);
+    Route::get('/debtors',              [ReportController::class, 'debtors']);
+    Route::get('/payroll-summary',      [ReportController::class, 'payrollSummary']);
+    Route::get('/collections-by-method',[ReportController::class, 'collectionsByMethod']);
+});
 
     // Super admin only
     Route::middleware('role:super-admin')->prefix('admin')->group(function () {
