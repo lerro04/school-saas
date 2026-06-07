@@ -72,7 +72,7 @@ Route::prefix('reports')->group(function () {
 });
 
 // Portal routes
-Route::prefix('portal')->group(function () {
+Route::prefix('portal')->middleware('portal.tenancy')->group(function () {
 
     // Public portal auth
     Route::post('/login',  [PortalAuthController::class, 'login']);

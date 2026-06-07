@@ -9,8 +9,10 @@ const portalApi = axios.create({
 });
 
 portalApi.interceptors.request.use((config) => {
-    const token = localStorage.getItem('portal_token');
-    if (token) config.headers.Authorization = `Bearer ${token}`;
+    const token    = localStorage.getItem('portal_token');
+    const tenantId = localStorage.getItem('portal_tenant');
+    if (token)    config.headers.Authorization = `Bearer ${token}`;
+    if (tenantId) config.headers['X-Tenant-ID'] = tenantId;
     return config;
 });
 
