@@ -14,7 +14,6 @@ import StudentResults from './pages/portal/student/StudentResults';
 import TeacherDashboard from './pages/portal/teacher/TeacherDashboard';
 import ParentDashboard from './pages/portal/parent/ParentDashboard';
 import TeacherAnnouncements from './pages/portal/teacher/TeacherAnnouncements';
-import TeacherAnnouncements from './pages/portal/teacher/TeacherAnnouncements';
 import StudentAnnouncements from './pages/portal/student/StudentAnnouncements';
 
 

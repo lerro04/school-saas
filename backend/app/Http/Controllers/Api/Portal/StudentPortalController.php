@@ -13,40 +13,64 @@ use Illuminate\Http\Request;
 class StudentPortalController extends Controller
 {
     public function dashboard(Request $request)
-    {
-        $studentId = $request->user()->reference_id;
+{
+    $studentId = $request->user()->reference_id;
 
-        $fees = FeeInvoice::where('student_id', $studentId)
-            ->select('total_amount', 'amount_paid', 'balance', 'status', 'term')
-            ->get();
+    $fees = FeeInvoice::where('student_id', $studentId)
+        ->select('id', 'total_amount', 'amount_paid', 'balance', 'status', 'term', 'invoice_number')
+        ->get();
 
-        $assignments = Assignment::whereHas('schoolClass.students', function($q) use ($studentId) {
-            $q->where('students.id', $studentId);
-        })->where('is_published', true)
-          ->where('due_date', '>=', now())
-          ->orderBy('due_date')
-          ->limit(5)
-          ->get();
+    $hasOutstanding = $fees->where('status', '!=', 'paid')->count() > 0;
 
+    $assignments = Assignment::whereHas('schoolClass.students', function($q) use ($studentId) {
+        $q->where('students.id', $studentId);
+    })->where('is_published', true)
+      ->where('due_date', '>=', now())
+      ->orderBy('due_date')
+      ->limit(5)
+      ->get();
+
+    // Only return results if no outstanding fees
+    $results = [];
+    $resultsLocked = false;
+
+    if ($hasOutstanding) {
+        $resultsLocked = true;
+        // Return count only, no actual marks
+        $results = Result::where('student_id', $studentId)
+            ->select('id', 'subject', 'term', 'academic_year')
+            ->get()
+            ->map(fn($r) => [
+                'id'            => $r->id,
+                'subject'       => $r->subject,
+                'term'          => $r->term,
+                'academic_year' => $r->academic_year,
+                'score'         => null,
+                'grade'         => null,
+                'remarks'       => null,
+            ]);
+    } else {
         $results = Result::where('student_id', $studentId)
             ->orderBy('created_at', 'desc')
             ->limit(10)
             ->get();
-
-        $announcements = Announcement::where('is_published', true)
-            ->whereIn('audience', ['all', 'students'])
-            ->orderBy('created_at', 'desc')
-            ->limit(5)
-            ->get();
-
-        return response()->json([
-            'fees'          => $fees,
-            'total_balance' => $fees->sum('balance'),
-            'assignments'   => $assignments,
-            'results'       => $results,
-            'announcements' => $announcements,
-        ]);
     }
+
+    $announcements = Announcement::where('is_published', true)
+        ->whereIn('audience', ['all', 'students'])
+        ->orderBy('created_at', 'desc')
+        ->limit(5)
+        ->get();
+
+    return response()->json([
+        'fees'            => $fees,
+        'total_balance'   => $fees->sum('balance'),
+        'assignments'     => $assignments,
+        'results'         => $results,
+        'results_locked'  => $resultsLocked,
+        'announcements'   => $announcements,
+    ]);
+}
 
     public function payFees(Request $request)
     {
