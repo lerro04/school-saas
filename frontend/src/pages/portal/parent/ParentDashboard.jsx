@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import PortalLayout from '../PortalLayout';
 import portalApi from '../../../services/portalApi';
+import { X } from 'lucide-react';
 
 export default function ParentDashboard() {
     const [data, setData]       = useState(null);
@@ -44,7 +45,7 @@ export default function ParentDashboard() {
                 invoice_id: selected.id,
             });
             if (r.data.paid) {
-                setMessage('✅ Payment confirmed!');
+                setMessage('Payment confirmed!');
                 setSelected(null);
                 setPollUrl(null);
                 portalApi.get('/parent/dashboard').then(r => setData(r.data));
@@ -151,7 +152,9 @@ export default function ParentDashboard() {
                     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
                         <div className="flex items-center justify-between mb-4">
                             <h2 className="text-lg font-bold">Pay Fees</h2>
-                            <button onClick={() => setSelected(null)} className="text-gray-400 text-xl">✕</button>
+                            <button onClick={() => setSelected(null)} className="text-gray-400 hover:text-gray-600">
+                                <X size={20} />
+                            </button>
                         </div>
                         <div className="bg-blue-50 rounded-lg p-3 mb-4 text-sm">
                             <p className="font-medium text-blue-800">{selected.term}</p>

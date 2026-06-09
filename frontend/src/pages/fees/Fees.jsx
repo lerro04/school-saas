@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Layout from '../../components/Layout';
 import api from '../../services/api';
+import { Link, X } from 'lucide-react';
 
 export default function Fees() {
     const [invoices, setInvoices]   = useState([]);
@@ -162,7 +163,9 @@ export default function Fees() {
                     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
                         <div className="flex items-center justify-between p-6 border-b">
                             <h2 className="text-lg font-bold text-gray-800">New Fee Invoice</h2>
-                            <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-600 text-xl">✕</button>
+                            <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-600">
+                                <X size={20} />
+                            </button>
                         </div>
                         <form onSubmit={handleSubmit} className="p-6 space-y-4">
                             {error && <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">{error}</div>}
@@ -235,7 +238,9 @@ export default function Fees() {
                     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
                         <div className="flex items-center justify-between p-6 border-b">
                             <h2 className="text-lg font-bold text-gray-800">Record Payment</h2>
-                            <button onClick={() => setShowPayModal(false)} className="text-gray-400 hover:text-gray-600 text-xl">✕</button>
+                            <button onClick={() => setShowPayModal(false)} className="text-gray-400 hover:text-gray-600">
+                                <X size={20} />
+                            </button>
                         </div>
 
                         {/* Invoice summary */}
@@ -277,7 +282,9 @@ export default function Fees() {
 
 {['ecocash', 'onemoney', 'webpayment'].includes(payForm.method) && (
     <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm">
-        <p className="text-blue-700 font-medium mb-2">🔗 Paynow Online Payment</p>
+        <p className="text-blue-700 font-medium mb-2 flex items-center gap-2">
+            <Link size={14} /> Paynow Online Payment
+        </p>
         <p className="text-blue-600 text-xs">
             {payForm.method === 'webpayment'
                 ? 'Customer will be redirected to Paynow to complete payment.'

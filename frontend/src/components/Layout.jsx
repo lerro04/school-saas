@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { LayoutDashboard, Users, DollarSign, UserCheck, LogOut, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const navItems = [
-    { path: '/',         label: 'Dashboard',  icon: '📊' },
-    { path: '/students', label: 'Students',   icon: '🎓' },
-    { path: '/fees',     label: 'Fees',       icon: '💰' },
-    { path: '/staff',    label: 'Staff',      icon: '👥' },
+    { path: '/',         label: 'Dashboard',  icon: LayoutDashboard },
+    { path: '/students', label: 'Students',   icon: Users },
+    { path: '/fees',     label: 'Fees',       icon: DollarSign },
+    { path: '/staff',    label: 'Staff',      icon: UserCheck },
 ];
 
 export default function Layout({ children }) {
@@ -31,33 +32,34 @@ export default function Layout({ children }) {
                             <p className="text-blue-300 text-xs truncate">{user?.name}</p>
                         </div>
                     )}
-                    <button onClick={() => setCollapsed(!collapsed)}
-                        className="p-1 rounded hover:bg-blue-800 text-blue-300">
-                        {collapsed ? '→' : '←'}
-                    </button>
+                   <button onClick={() => setCollapsed(!collapsed)}
+    className="p-1 rounded hover:bg-blue-800 text-blue-300">
+    {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+</button>
                 </div>
 
                 {/* Nav */}
                 <nav className="flex-1 py-4">
                     {navItems.map(item => (
-                        <NavLink key={item.path} to={item.path} end={item.path === '/'}
-                            className={({ isActive }) =>
-                                `flex items-center gap-3 px-4 py-3 text-sm transition hover:bg-blue-800
-                                ${isActive ? 'bg-blue-700 border-r-4 border-blue-300 font-semibold' : 'text-blue-100'}`
-                            }>
-                            <span className="text-lg">{item.icon}</span>
-                            {!collapsed && <span>{item.label}</span>}
-                        </NavLink>
-                    ))}
+    <NavLink key={item.path} to={item.path} end={item.path === '/'}
+        className={({ isActive }) =>
+            `flex items-center gap-3 px-4 py-3 text-sm transition hover:bg-blue-800
+            ${isActive ? 'bg-blue-700 border-r-4 border-blue-300 font-semibold' : 'text-blue-100'}`
+        }>
+        <item.icon size={18} />
+        {!collapsed && <span>{item.label}</span>}
+    </NavLink>
+))}
+
                 </nav>
 
                 {/* User / Logout */}
                 <div className="p-4 border-t border-blue-800">
                     <button onClick={handleLogout}
-                        className="flex items-center gap-3 text-sm text-blue-300 hover:text-white w-full">
-                        <span className="text-lg">🚪</span>
-                        {!collapsed && <span>Logout</span>}
-                    </button>
+    className="flex items-center gap-3 text-sm text-blue-300 hover:text-white w-full">
+    <LogOut size={18} />
+    {!collapsed && <span>Logout</span>}
+</button>
                 </div>
             </aside>
 

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import PortalLayout from '../PortalLayout';
 import portalApi from '../../../services/portalApi';
 import { usePortalAuth } from '../../../context/PortalAuthContext';
+import { CheckCircle, ChevronRight, Inbox, Plus, Target, Trash2, X } from 'lucide-react';
 
 export default function TeacherDashboard() {
     const [assignments, setAssignments] = useState([]);
@@ -35,7 +36,7 @@ export default function TeacherDashboard() {
             await portalApi.post('/assignments', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
-            setMessage('✅ Assignment posted successfully!');
+            setMessage('Assignment posted successfully!');
             setShowModal(false);
             setForm({ title: '', description: '', class_id: '', subject: '', type: 'assignment', due_date: '', total_marks: 100, file: null });
             portalApi.get('/assignments').then(r => setAssignments(r.data));
@@ -62,13 +63,15 @@ export default function TeacherDashboard() {
                     <p className="text-gray-500 text-sm mt-0.5">Welcome, {user?.name}</p>
                 </div>
                 <button onClick={() => { setMessage(''); setShowModal(true); }}
-                    className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
-                    + Post Assignment
+                    className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2">
+                    <Plus size={16} /> Post Assignment
                 </button>
             </div>
 
             {message && !showModal && (
-                <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-lg mb-4 text-sm">{message}</div>
+                <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-lg mb-4 text-sm flex items-center gap-2">
+                    <CheckCircle size={16} /> {message}
+                </div>
             )}
 
             <div className="space-y-4">
@@ -83,13 +86,21 @@ export default function TeacherDashboard() {
                                 <p className="text-sm text-gray-600 mt-2">{a.description}</p>
                             </div>
                             <button onClick={() => handleDelete(a.id)}
-                                className="text-red-500 hover:text-red-700 text-xs ml-4">Delete</button>
+                                className="text-red-500 hover:text-red-700 ml-4">
+                                <Trash2 size={15} />
+                            </button>
                         </div>
                         <div className="flex items-center gap-4 mt-3 text-xs text-gray-500">
-                            <span>📥 {a.submissions?.length ?? 0} submissions</span>
-                            <span>🎯 {a.total_marks} marks</span>
+                            <span className="inline-flex items-center gap-1">
+                                <Inbox size={13} /> {a.submissions?.length ?? 0} submissions
+                            </span>
+                            <span className="inline-flex items-center gap-1">
+                                <Target size={13} /> {a.total_marks} marks
+                            </span>
                             <a href={`/portal/teacher/submissions?assignment_id=${a.id}`}
-                                className="text-purple-600 hover:underline">View Submissions →</a>
+                                className="text-purple-600 hover:underline inline-flex items-center gap-1">
+                                View Submissions <ChevronRight size={13} />
+                            </a>
                         </div>
                     </div>
                 ))}
@@ -100,7 +111,9 @@ export default function TeacherDashboard() {
                     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
                         <div className="flex items-center justify-between p-6 border-b">
                             <h2 className="text-lg font-bold">Post Assignment</h2>
-                            <button onClick={() => setShowModal(false)} className="text-gray-400 text-xl">✕</button>
+                            <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-600">
+                                <X size={20} />
+                            </button>
                         </div>
                         <form onSubmit={handleSubmit} className="p-6 space-y-4">
                             {message && (

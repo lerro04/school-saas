@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react';
 import Layout from '../../components/Layout';
 import api from '../../services/api';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
+import { Users, UserCheck, DollarSign, AlertTriangle } from 'lucide-react';
 
 const COLORS = ['#2563eb', '#16a34a', '#dc2626', '#d97706'];
 
 function StatCard({ label, value, sub, color, icon }) {
     return (
         <div className="bg-white rounded-xl shadow-sm p-6 flex items-center gap-4">
-            <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl ${color}`}>
+            <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${color}`}>
                 {icon}
             </div>
             <div>
@@ -58,28 +59,28 @@ export default function Dashboard() {
                     value={data?.students.total ?? 0}
                     sub="Currently enrolled"
                     color="bg-blue-100"
-                    icon="🎓"
+                    icon={<Users size={22} className="text-blue-600" />}
                 />
                 <StatCard
                     label="Total Staff"
                     value={data?.staff.total ?? 0}
                     sub="Active staff members"
                     color="bg-green-100"
-                    icon="👥"
+                    icon={<UserCheck size={22} className="text-green-600" />} 
                 />
                 <StatCard
                     label="Fees Collected"
                     value={`$${Number(data?.fees.total_collected ?? 0).toLocaleString()}`}
                     sub={`${data?.fees.collection_rate ?? 0}% collection rate`}
                     color="bg-emerald-100"
-                    icon="💰"
+                    icon={<DollarSign size={22} className="text-emerald-600" />}
                 />
                 <StatCard
                     label="Outstanding"
                     value={`$${Number(data?.fees.total_outstanding ?? 0).toLocaleString()}`}
                     sub={`${data?.fees.unpaid_invoices ?? 0} unpaid invoices`}
                     color="bg-red-100"
-                    icon="⚠️"
+                   icon={<AlertTriangle size={22} className="text-red-600" />}
                 />
             </div>
 

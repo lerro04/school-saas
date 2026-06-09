@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { GraduationCap } from 'lucide-react';
 
 export default function Login() {
     const [form, setForm]     = useState({ email: '', password: '', tenant_id: '' });
@@ -28,7 +29,7 @@ export default function Login() {
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
                 <div className="text-center mb-8">
                     <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                        <span className="text-white text-2xl font-bold">S</span>
+                        <GraduationCap size={32} className="text-white" />
                     </div>
                     <h1 className="text-2xl font-bold text-gray-800">SchoolSaaS</h1>
                     <p className="text-gray-500 text-sm mt-1">Sign in to your school portal</p>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import PortalLayout from '../PortalLayout';
 import portalApi from '../../../services/portalApi';
-import { usePortalAuth } from '../../../context/PortalAuthContext';
+import { X } from 'lucide-react';
 
 export default function StudentFees() {
     const [fees, setFees]           = useState([]);
@@ -12,7 +12,6 @@ export default function StudentFees() {
     const [pollUrl, setPollUrl]     = useState(null);
     const [polling, setPolling]     = useState(false);
     const [message, setMessage]     = useState('');
-    const { user }                  = usePortalAuth();
 
     useEffect(() => {
         portalApi.get('/student/dashboard')
@@ -47,7 +46,7 @@ export default function StudentFees() {
                 invoice_id: selectedInvoice.id,
             });
             if (r.data.paid) {
-                setMessage('✅ Payment confirmed! Your balance has been updated.');
+                setMessage('Payment confirmed! Your balance has been updated.');
                 setSelectedInvoice(null);
                 setPollUrl(null);
                 portalApi.get('/student/dashboard').then(r => setFees(r.data.fees ?? []));
@@ -112,7 +111,9 @@ export default function StudentFees() {
                     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
                         <div className="flex items-center justify-between mb-4">
                             <h2 className="text-lg font-bold">Pay Fees</h2>
-                            <button onClick={() => setSelectedInvoice(null)} className="text-gray-400 text-xl">✕</button>
+                            <button onClick={() => setSelectedInvoice(null)} className="text-gray-400 hover:text-gray-600">
+                                <X size={20} />
+                            </button>
                         </div>
 
                         <div className="bg-emerald-50 rounded-lg p-3 mb-4 text-sm">

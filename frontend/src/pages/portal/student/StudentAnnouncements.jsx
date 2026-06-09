@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import PortalLayout from '../PortalLayout';
 import portalApi from '../../../services/portalApi';
+import { Megaphone, Paperclip, ChevronRight, X } from 'lucide-react';
 
 export default function StudentAnnouncements() {
     const [announcements, setAnnouncements] = useState([]);
@@ -35,7 +36,7 @@ export default function StudentAnnouncements() {
                             onClick={() => setSelected(a)}>
                             <div className="flex items-start justify-between mb-2">
                                 <div className="flex items-center gap-3">
-                                    <span className="text-2xl">📢</span>
+                                    <Megaphone size={20} className="text-gray-500 flex-shrink-0" />
                                     <div>
                                         <p className="font-semibold text-gray-800">{a.title}</p>
                                         <p className="text-xs text-gray-400 mt-0.5">
@@ -49,9 +50,13 @@ export default function StudentAnnouncements() {
                             </div>
                             <p className="text-sm text-gray-600 ml-11 line-clamp-2">{a.body}</p>
                             {a.attachment_name && (
-                                <p className="text-xs text-blue-600 ml-11 mt-2">📎 {a.attachment_name}</p>
+                                <span className="flex items-center gap-1 text-xs text-blue-600 ml-11 mt-2">
+                                    <Paperclip size={12} /> {a.attachment_name}
+                                </span>
                             )}
-                            <p className="text-xs text-emerald-600 ml-11 mt-2 font-medium">Click to read full message →</p>
+                            <span className="flex items-center gap-1 text-xs text-emerald-600 ml-11 mt-2 font-medium">
+                                Click to read full message <ChevronRight size={14} />
+                            </span>
                         </div>
                     ))}
                 </div>
@@ -70,7 +75,9 @@ export default function StudentAnnouncements() {
                                     })}
                                 </p>
                             </div>
-                            <button onClick={() => setSelected(null)} className="text-gray-400 hover:text-gray-600 text-xl ml-4">✕</button>
+                            <button onClick={() => setSelected(null)} className="text-gray-400 hover:text-gray-600 ml-4">
+                                <X size={20} />
+                            </button>
                         </div>
 
                         <div className="p-6">
@@ -82,7 +89,7 @@ export default function StudentAnnouncements() {
                                     <a href={`http://127.0.0.1:8000/storage/${selected.attachment_path}`}
                                         target="_blank" rel="noreferrer"
                                         className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 font-medium">
-                                        📎 {selected.attachment_name}
+                                        <Paperclip size={14} /> {selected.attachment_name}
                                         <span className="text-xs text-blue-400">— Click to open</span>
                                     </a>
                                 </div>

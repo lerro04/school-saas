@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import PortalLayout from '../PortalLayout';
 import portalApi from '../../../services/portalApi';
+import { Paperclip, X } from 'lucide-react';
 
 export default function StudentAssignments() {
     const [assignments, setAssignments] = useState([]);
@@ -29,7 +30,7 @@ export default function StudentAssignments() {
             await portalApi.post('/submissions', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
-            setMessage('✅ Submitted successfully!');
+            setMessage('Submitted successfully!');
             setSelected(null);
         } catch (err) {
             setMessage(err.response?.data?.message ?? 'Submission failed');
@@ -75,8 +76,8 @@ export default function StudentAssignments() {
                                     {a.attachment_path && (
                                         <a href={`http://127.0.0.1:8000/storage/${a.attachment_path}`}
                                             target="_blank" rel="noreferrer"
-                                            className="text-blue-600 text-xs hover:underline">
-                                            📎 Download
+                                            className="text-blue-600 text-xs hover:underline inline-flex items-center gap-1">
+                                            <Paperclip size={12} /> Download
                                         </a>
                                     )}
                                     <button onClick={() => { setSelected(a); setMessage(''); setForm({ notes: '', file: null }); }}
@@ -96,7 +97,9 @@ export default function StudentAssignments() {
                     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
                         <div className="flex items-center justify-between mb-4">
                             <h2 className="text-lg font-bold">Submit: {selected.title}</h2>
-                            <button onClick={() => setSelected(null)} className="text-gray-400 text-xl">✕</button>
+                            <button onClick={() => setSelected(null)} className="text-gray-400 hover:text-gray-600">
+                                <X size={20} />
+                            </button>
                         </div>
 
                         {message && (

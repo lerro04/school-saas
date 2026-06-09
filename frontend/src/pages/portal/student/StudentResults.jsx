@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import PortalLayout from '../PortalLayout';
 import portalApi from '../../../services/portalApi';
+import { Lock, AlertCircle } from 'lucide-react';
+
 
 export default function StudentResults() {
     const [results, setResults]         = useState([]);
@@ -39,21 +41,21 @@ export default function StudentResults() {
 
             {/* Outstanding fees warning */}
             {locked && (
-                <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6 flex items-start gap-3">
-                    <span className="text-2xl">🔒</span>
-                    <div>
-                        <p className="font-semibold text-red-700">Results Locked — Outstanding Fees</p>
-                        <p className="text-sm text-red-600 mt-0.5">
-                            Your results are locked because you have an outstanding balance of{' '}
-                            <strong>${Number(balance).toLocaleString()}</strong>.
-                            Please clear your fees to view your full results.
-                        </p>
-                        <a href="/portal/student/fees"
-                            className="inline-block mt-2 text-sm bg-red-600 hover:bg-red-700 text-white px-4 py-1.5 rounded-lg transition">
-                            Pay Fees Now →
-                        </a>
-                    </div>
-                </div>
+               <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6 flex items-start gap-3">
+    <Lock size={22} className="text-red-500 mt-0.5 flex-shrink-0" />
+    <div>
+        <p className="font-semibold text-red-700">Results Locked — Outstanding Fees</p>
+        <p className="text-sm text-red-600 mt-0.5">
+            Your results are locked because you have an outstanding balance of{' '}
+            <strong>${Number(balance).toLocaleString()}</strong>.
+            Please clear your fees to view your full results.
+        </p>
+        <a href="/portal/student/fees"
+            className="inline-block mt-2 text-sm bg-red-600 hover:bg-red-700 text-white px-4 py-1.5 rounded-lg transition">
+            Pay Fees Now →
+        </a>
+    </div>
+</div>
             )}
 
             {results.length === 0 ? (
@@ -77,15 +79,15 @@ export default function StudentResults() {
                                     <td className="px-4 py-3 text-gray-600">{r.term}</td>
                                     <td className="px-4 py-3 text-gray-600">{r.academic_year}</td>
                                     <td className="px-4 py-3">
-                                        {locked ? (
-                                            <span className="inline-flex items-center gap-1 text-gray-400">
-                                                <span className="text-base">🔒</span>
-                                                <span className="blur-sm select-none">00</span>
-                                            </span>
-                                        ) : (
-                                            <span className="font-bold">{r.score ?? '—'}</span>
-                                        )}
-                                    </td>
+    {locked ? (
+        <span className="flex items-center gap-1 text-gray-400">
+            <Lock size={14} />
+            <span className="blur-sm select-none">00</span>
+        </span>
+    ) : (
+        <span className="font-bold">{r.score ?? '—'}</span>
+    )}
+</td>
                                     <td className="px-4 py-3">
                                         {locked ? (
                                             <span className="blur-sm select-none bg-gray-100 px-2 py-0.5 rounded-full text-xs">A</span>
@@ -106,11 +108,10 @@ export default function StudentResults() {
                     </table>
 
                     {locked && (
-                        <div className="px-4 py-3 bg-red-50 border-t border-red-100 text-center">
-                            <p className="text-xs text-red-600">
-                                🔒 Scores and grades are hidden until fees are cleared.
-                            </p>
-                        </div>
+                        <div className="px-4 py-3 bg-red-50 border-t border-red-100 text-center flex items-center justify-center gap-2">
+    <Lock size={14} className="text-red-500" />
+    <p className="text-xs text-red-600">Scores and grades are hidden until fees are cleared.</p>
+</div>
                     )}
                 </div>
             )}

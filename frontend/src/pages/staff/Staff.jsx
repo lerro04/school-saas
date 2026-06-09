@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Layout from '../../components/Layout';
 import api from '../../services/api';
+import { X } from 'lucide-react';
 
 export default function Staff() {
     const [staff, setStaff]         = useState([]);
@@ -144,7 +145,9 @@ export default function Staff() {
                     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
                         <div className="flex items-center justify-between p-6 border-b">
                             <h2 className="text-lg font-bold text-gray-800">Add Staff Member</h2>
-                            <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-600 text-xl">✕</button>
+                            <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-600">
+                                <X size={20} />
+                            </button>
                         </div>
 
                         <form onSubmit={handleSubmit} className="p-6 space-y-4">
