@@ -86,6 +86,8 @@ Route::prefix('portal')->middleware('portal.tenancy')->group(function () {
         Route::get('/announcements', [PortalAnnouncementController::class, 'index']);
         Route::post('/announcements', [PortalAnnouncementController::class, 'store']);
         Route::delete('/announcements/{id}', [PortalAnnouncementController::class, 'destroy']);
+        Route::put('/announcements/{id}', [PortalAnnouncementController::class, 'update']);
+Route::get('/announcements/{id}', [PortalAnnouncementController::class, 'show']);
 
         // Assignments
         Route::get('/assignments',          [PortalAssignmentController::class, 'index']);

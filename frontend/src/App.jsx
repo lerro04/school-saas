@@ -13,6 +13,11 @@ import StudentAssignments from './pages/portal/student/StudentAssignments';
 import StudentResults from './pages/portal/student/StudentResults';
 import TeacherDashboard from './pages/portal/teacher/TeacherDashboard';
 import ParentDashboard from './pages/portal/parent/ParentDashboard';
+import TeacherAnnouncements from './pages/portal/teacher/TeacherAnnouncements';
+import TeacherAnnouncements from './pages/portal/teacher/TeacherAnnouncements';
+import StudentAnnouncements from './pages/portal/student/StudentAnnouncements';
+
+
 
 function ProtectedRoute({ children }) {
     const { user, loading } = useAuth();
@@ -46,6 +51,9 @@ export default function App() {
             <Route path="/portal/student/results" element={<PortalRoute role="student"><StudentResults /></PortalRoute>} />
             <Route path="/portal/teacher" element={<PortalRoute role="teacher"><TeacherDashboard /></PortalRoute>} />
             <Route path="/portal/parent" element={<PortalRoute role="parent"><ParentDashboard /></PortalRoute>} />
+            <Route path="/portal/teacher/announcements" element={<PortalRoute role="teacher"><TeacherAnnouncements /></PortalRoute>} />
+            <Route path="/portal/teacher/announcements" element={<PortalRoute role="teacher"><TeacherAnnouncements /></PortalRoute>} />
+<Route path="/portal/student/announcements" element={<PortalRoute role="student"><StudentAnnouncements /></PortalRoute>} />
 
             <Route path="*" element={<Navigate to="/" />} />
         </Routes>

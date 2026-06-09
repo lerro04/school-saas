@@ -18,11 +18,12 @@ export default function PortalLayout({ children }) {
 
     const navLinks = {
         student: [
-            { label: 'Dashboard',    path: '/portal/student',             icon: '📊' },
-            { label: 'Assignments',  path: '/portal/student/assignments',  icon: '📝' },
-            { label: 'My Results',   path: '/portal/student/results',      icon: '📈' },
-            { label: 'Fee Balance',  path: '/portal/student/fees',         icon: '💰' },
-        ],
+    { label: 'Dashboard',      path: '/portal/student',               icon: '📊' },
+    { label: 'Assignments',    path: '/portal/student/assignments',    icon: '📝' },
+    { label: 'My Results',     path: '/portal/student/results',        icon: '📈' },
+    { label: 'Fee Balance',    path: '/portal/student/fees',           icon: '💰' },
+    { label: 'Announcements',  path: '/portal/student/announcements',  icon: '📢' },
+],
         parent: [
             { label: 'Dashboard',   path: '/portal/parent',           icon: '📊' },
             { label: 'Results',     path: '/portal/parent/results',   icon: '📈' },
