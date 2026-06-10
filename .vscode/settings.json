@@ -3,6 +3,10 @@
         "/^php artisan migrate 2>&1 \\| tail -30$/": {
             "approve": true,
             "matchCommandLine": true
+        },
+        "/^cd /c/Users/WILLIAM\\\\ BVUURE/school-saas/backend ; php artisan tenants:migrate$/": {
+            "approve": true,
+            "matchCommandLine": true
         }
     }
 }

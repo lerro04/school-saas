@@ -10,6 +10,7 @@ const navItems = [
     { path: '/fees',          label: 'Fees',           icon: DollarSign },
     { path: '/revenue',       label: 'Revenue',        icon: TrendingUp },
     { path: '/expenses',      label: 'Expenses',       icon: TrendingDown },
+    { path: '/budgets',       label: 'Budgets',        icon: TrendingUp },
     { path: '/reports/financial', label: 'Reports',   icon: BarChart3 },
     { path: '/staff',         label: 'Staff',          icon: UserCheck },
 ];
