@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\RevenueController;
 use App\Http\Controllers\Api\ExpenseController;
 use App\Http\Controllers\Api\BudgetController;
 use App\Http\Controllers\Api\AssetController;
+use App\Http\Controllers\Api\InventoryController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\StaffController;
 use App\Http\Controllers\Api\PayrollController;
@@ -76,6 +77,12 @@ Route::apiResource('payroll', PayrollController::class);
     // Assets
     Route::apiResource('assets', AssetController::class);
     Route::get('/assets-summary', [AssetController::class, 'summary']);
+
+    // Inventory
+    Route::apiResource('inventory', InventoryController::class);
+    Route::post('/inventory/restock', [InventoryController::class, 'restock']);
+    Route::post('/inventory/usage-out', [InventoryController::class, 'usageOut']);
+    Route::get('/inventory-summary', [InventoryController::class, 'summary']);
 
     // Reports
 Route::prefix('reports')->group(function () {

@@ -12,6 +12,7 @@ const navItems = [
     { path: '/expenses',      label: 'Expenses',       icon: TrendingDown },
     { path: '/budgets',       label: 'Budgets',        icon: TrendingUp },
     { path: '/assets',        label: 'Assets',         icon: Package },
+    { path: '/inventory',     label: 'Inventory',      icon: Package },
     { path: '/reports/financial', label: 'Reports',   icon: BarChart3 },
     { path: '/staff',         label: 'Staff',          icon: UserCheck },
 ];

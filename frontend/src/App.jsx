@@ -12,6 +12,7 @@ import Expenses from './pages/expenses/Expenses';
 import Budgets from './pages/budgets/Budgets';
 import FinancialReports from './pages/reports/FinancialReports';
 import Assets from './pages/assets/Assets';
+import Inventory from './pages/inventory/Inventory';
 import PortalLogin from './pages/portal/PortalLogin';
 import StudentDashboard from './pages/portal/student/StudentDashboard';
 import StudentFees from './pages/portal/student/StudentFees';
@@ -56,6 +57,7 @@ export default function App() {
             <Route path="/expenses" element={<ProtectedRoute><Expenses /></ProtectedRoute>} />
             <Route path="/budgets" element={<ProtectedRoute><Budgets /></ProtectedRoute>} />
             <Route path="/assets" element={<ProtectedRoute><Assets /></ProtectedRoute>} />
+            <Route path="/inventory" element={<ProtectedRoute><Inventory /></ProtectedRoute>} />
             <Route path="/reports/financial" element={<ProtectedRoute><FinancialReports /></ProtectedRoute>} />
 
             {/* Portal routes */}
