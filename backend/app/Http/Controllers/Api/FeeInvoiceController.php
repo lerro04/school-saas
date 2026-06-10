@@ -102,11 +102,17 @@ class FeeInvoiceController extends Controller
             'activity_fee' => 'nullable|numeric|min:0',
             'due_date'     => 'required|date',
             'class_id'     => 'nullable|exists:classes,id',
+            'level'        => 'nullable|string|max:100',
         ]);
 
         $query = Student::where('status', 'active');
         if ($request->class_id) {
             $query->where('class_id', $request->class_id);
+        }
+        if ($request->level) {
+            $query->whereHas('schoolClass', function ($q) use ($request) {
+                $q->where('level', $request->level);
+            });
         }
 
         $students = $query->get();

@@ -1,13 +1,17 @@
 import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LayoutDashboard, Users, DollarSign, UserCheck, LogOut, ChevronLeft, ChevronRight } from 'lucide-react';
+import { LayoutDashboard, Users, DollarSign, UserCheck, LogOut, ChevronLeft, ChevronRight, School, TrendingUp, TrendingDown, BarChart3 } from 'lucide-react';
 
 const navItems = [
-    { path: '/',         label: 'Dashboard',  icon: LayoutDashboard },
-    { path: '/students', label: 'Students',   icon: Users },
-    { path: '/fees',     label: 'Fees',       icon: DollarSign },
-    { path: '/staff',    label: 'Staff',      icon: UserCheck },
+    { path: '/',              label: 'Dashboard',      icon: LayoutDashboard },
+    { path: '/students',      label: 'Students',       icon: Users },
+    { path: '/classes',       label: 'Classes',        icon: School },
+    { path: '/fees',          label: 'Fees',           icon: DollarSign },
+    { path: '/revenue',       label: 'Revenue',        icon: TrendingUp },
+    { path: '/expenses',      label: 'Expenses',       icon: TrendingDown },
+    { path: '/reports/financial', label: 'Reports',   icon: BarChart3 },
+    { path: '/staff',         label: 'Staff',          icon: UserCheck },
 ];
 
 export default function Layout({ children }) {

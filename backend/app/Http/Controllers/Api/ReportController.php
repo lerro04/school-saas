@@ -8,6 +8,8 @@ use App\Models\Staff;
 use App\Models\FeeInvoice;
 use App\Models\Payment;
 use App\Models\Payroll;
+use App\Models\Revenue;
+use App\Models\Expense;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -187,4 +189,127 @@ class ReportController extends Controller
 
         return response()->json($data);
     }
-}
+
+    // Financial summary report
+    public function financialSummary(Request $request)
+    {
+        $request->validate([
+            'date_from' => 'nullable|date',
+            'date_to'   => 'nullable|date',
+        ]);
+
+        $dateFrom = $request->date_from ? date('Y-m-d', strtotime($request->date_from)) : now()->subMonths(12)->format('Y-m-d');
+        $dateTo = $request->date_to ? date('Y-m-d', strtotime($request->date_to)) : now()->format('Y-m-d');
+
+        // Total revenues
+        $totalRevenues = Revenue::whereBetween('revenue_date', [$dateFrom, $dateTo])
+            ->where('status', 'confirmed')
+            ->sum('amount');
+
+        // Total expenses
+        $totalExpenses = Expense::whereBetween('expense_date', [$dateFrom, $dateTo])
+            ->where('status', '!=', 'rejected')
+            ->sum('amount');
+
+        // Net profit/loss
+        $netProfit = $totalRevenues - $totalExpenses;
+
+        // Revenue by source
+        $revenueBySource = Revenue::whereBetween('revenue_date', [$dateFrom, $dateTo])
+            ->where('status', 'confirmed')
+            ->select('source', DB::raw('SUM(amount) as total'))
+            ->groupBy('source')
+            ->get();
+
+        // Expenses by category
+        $expensesByCategory = Expense::whereBetween('expense_date', [$dateFrom, $dateTo])
+            ->where('status', '!=', 'rejected')
+            ->select('category', DB::raw('SUM(amount) as total'))
+            ->groupBy('category')
+            ->get();
+
+        return response()->json([
+            'period' => [
+                'from' => $dateFrom,
+                'to'   => $dateTo,
+            ],
+            'summary' => [
+                'total_revenues' => $totalRevenues,
+                'total_expenses' => $totalExpenses,
+                'net_profit'     => $netProfit,
+                'profit_margin'  => $totalRevenues > 0 ? round(($netProfit / $totalRevenues) * 100, 2) : 0,
+            ],
+            'revenues_by_source' => $revenueBySource,
+            'expenses_by_category' => $expensesByCategory,
+        ]);
+    }
+
+    // Comprehensive financial report with comparison
+    public function comprehensiveFinancial(Request $request)
+    {
+        $request->validate([
+            'date_from' => 'nullable|date',
+            'date_to'   => 'nullable|date',
+        ]);
+
+        $dateFrom = $request->date_from ? date('Y-m-d', strtotime($request->date_from)) : now()->subMonths(12)->format('Y-m-d');
+        $dateTo = $request->date_to ? date('Y-m-d', strtotime($request->date_to)) : now()->format('Y-m-d');
+
+        // Fee collection data
+        $totalFeesInvoiced = FeeInvoice::sum('total_amount');
+        $totalFeesCollected = FeeInvoice::sum('amount_paid');
+
+        // Payroll data
+        $totalPayroll = Payroll::whereBetween('created_at', [$dateFrom, $dateTo])
+            ->where('status', 'paid')
+            ->sum('net_salary');
+
+        // Revenues
+        $totalRevenues = Revenue::whereBetween('revenue_date', [$dateFrom, $dateTo])
+            ->where('status', 'confirmed')
+            ->sum('amount');
+
+        // Expenses
+        $totalExpenses = Expense::whereBetween('expense_date', [$dateFrom, $dateTo])
+            ->where('status', '!=', 'rejected')
+            ->sum('amount');
+
+        // Cash flow
+        $totalIncome = $totalFeesCollected + $totalRevenues;
+        $totalOutflow = $totalPayroll + $totalExpenses;
+        $cashFlow = $totalIncome - $totalOutflow;
+
+        return response()->json([
+            'period' => [
+                'from' => $dateFrom,
+                'to'   => $dateTo,
+            ],
+            'income' => [
+                'fees_collected'    => $totalFeesCollected,
+                'other_revenues'    => $totalRevenues,
+                'total_income'      => $totalIncome,
+            ],
+            'expenses' => [
+                'payroll'           => $totalPayroll,
+                'operational'       => $totalExpenses,
+                'total_expenses'    => $totalOutflow,
+            ],
+            'cash_flow' => [
+                'total_income'      => $totalIncome,
+                'total_outflow'     => $totalOutflow,
+                'net_cash_flow'     => $cashFlow,
+            ],
+        ]);
+    }
+
+    // Expense approval status report
+    public function expenseStatus()
+    {
+        $data = Expense::select(
+            'status',
+            DB::raw('COUNT(*) as count'),
+            DB::raw('SUM(amount) as total_amount')
+        )->groupBy('status')->get();
+
+        return response()->json($data);
+    }

@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
 import Layout from '../../components/Layout';
 import api from '../../services/api';
-import { Link, X } from 'lucide-react';
+import { Layers, Link, Plus, X } from 'lucide-react';
 
 export default function Fees() {
     const [invoices, setInvoices]   = useState([]);
     const [students, setStudents]   = useState([]);
+    const [classes, setClasses]     = useState([]);
     const [loading, setLoading]     = useState(true);
     const [showModal, setShowModal] = useState(false);
+    const [showBulkModal, setShowBulkModal] = useState(false);
     const [showPayModal, setShowPayModal] = useState(false);
     const [selectedInvoice, setSelectedInvoice] = useState(null);
     const [saving, setSaving]       = useState(false);
@@ -16,6 +18,11 @@ export default function Fees() {
 
     const [form, setForm] = useState({
         student_id: '', term: '', tuition_fee: '',
+        boarding_fee: '', activity_fee: '', due_date: '',
+    });
+
+    const [bulkForm, setBulkForm] = useState({
+        target: 'all', class_id: '', level: '', term: '', tuition_fee: '',
         boarding_fee: '', activity_fee: '', due_date: '',
     });
 
@@ -34,6 +41,7 @@ export default function Fees() {
     useEffect(() => {
         fetchInvoices();
         api.get('/students').then(r => setStudents(r.data.data ?? r.data));
+        api.get('/classes').then(r => setClasses(r.data));
     }, []);
 
     const handleSubmit = async (e) => {
@@ -71,6 +79,40 @@ export default function Fees() {
         }
     };
 
+    const handleBulkSubmit = async (e) => {
+        e.preventDefault();
+        setSaving(true);
+        setError('');
+        try {
+            const payload = {
+                term: bulkForm.term,
+                tuition_fee: bulkForm.tuition_fee,
+                boarding_fee: bulkForm.boarding_fee,
+                activity_fee: bulkForm.activity_fee,
+                due_date: bulkForm.due_date,
+            };
+
+            if (bulkForm.target === 'class') {
+                payload.class_id = bulkForm.class_id;
+            }
+            if (bulkForm.target === 'level') {
+                payload.level = bulkForm.level;
+            }
+
+            await api.post('/fee-invoices/bulk', payload);
+            setShowBulkModal(false);
+            setBulkForm({
+                target: 'all', class_id: '', level: '', term: '', tuition_fee: '',
+                boarding_fee: '', activity_fee: '', due_date: '',
+            });
+            fetchInvoices(filterStatus);
+        } catch (err) {
+            setError(err.response?.data?.message ?? 'Failed to create bulk invoices');
+        } finally {
+            setSaving(false);
+        }
+    };
+
     const openPayModal = (invoice) => {
         setSelectedInvoice(invoice);
         setPayForm({ amount: invoice.balance, method: 'cash', transaction_reference: '', notes: '' });
@@ -84,6 +126,8 @@ export default function Fees() {
         return 'bg-red-100 text-red-700';
     };
 
+    const levels = [...new Set(classes.map(c => c.level).filter(Boolean))].sort();
+
     return (
         <Layout>
             {/* Header */}
@@ -92,10 +136,16 @@ export default function Fees() {
                     <h1 className="text-2xl font-bold text-gray-800">Fee Invoices</h1>
                     <p className="text-gray-500 text-sm mt-0.5">{invoices.length} invoices</p>
                 </div>
-                <button onClick={() => { setError(''); setShowModal(true); }}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
-                    + New Invoice
-                </button>
+                <div className="flex items-center gap-2">
+                    <button onClick={() => { setError(''); setShowBulkModal(true); }}
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2">
+                        <Layers size={16} /> Bulk Invoices
+                    </button>
+                    <button onClick={() => { setError(''); setShowModal(true); }}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2">
+                        <Plus size={16} /> New Invoice
+                    </button>
+                </div>
             </div>
 
             {/* Filter */}
@@ -225,6 +275,110 @@ export default function Fees() {
                                 <button type="submit" disabled={saving}
                                     className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg text-sm font-medium disabled:opacity-50">
                                     {saving ? 'Creating...' : 'Create Invoice'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Bulk Invoice Modal */}
+            {showBulkModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+                        <div className="flex items-center justify-between p-6 border-b">
+                            <h2 className="text-lg font-bold text-gray-800">Create Bulk Invoices</h2>
+                            <button onClick={() => setShowBulkModal(false)} className="text-gray-400 hover:text-gray-600">
+                                <X size={20} />
+                            </button>
+                        </div>
+                        <form onSubmit={handleBulkSubmit} className="p-6 space-y-4">
+                            {error && <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">{error}</div>}
+
+                            <div>
+                                <label className="block text-xs font-medium text-gray-600 mb-1">Create For *</label>
+                                <select required value={bulkForm.target}
+                                    onChange={e => setBulkForm({...bulkForm, target: e.target.value, class_id: '', level: ''})}
+                                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                    <option value="all">All active students</option>
+                                    <option value="class">One class / level</option>
+                                    <option value="level">All students in a level</option>
+                                </select>
+                            </div>
+
+                            {bulkForm.target === 'class' && (
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-600 mb-1">Class / Level *</label>
+                                    <select required value={bulkForm.class_id}
+                                        onChange={e => setBulkForm({...bulkForm, class_id: e.target.value})}
+                                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                        <option value="">Select class...</option>
+                                        {classes.map(c => (
+                                            <option key={c.id} value={c.id}>
+                                                {c.name}{c.level ? ` - ${c.level}` : ''}{c.stream ? ` ${c.stream}` : ''} ({c.students_count ?? 0})
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
+
+                            {bulkForm.target === 'level' && (
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-600 mb-1">Level *</label>
+                                    <select required value={bulkForm.level}
+                                        onChange={e => setBulkForm({...bulkForm, level: e.target.value})}
+                                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                        <option value="">Select level...</option>
+                                        {levels.map(level => (
+                                            <option key={level} value={level}>{level}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
+
+                            <div>
+                                <label className="block text-xs font-medium text-gray-600 mb-1">Term *</label>
+                                <input required placeholder="e.g. Term 1 2026" value={bulkForm.term}
+                                    onChange={e => setBulkForm({...bulkForm, term: e.target.value})}
+                                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                            </div>
+
+                            <div className="grid grid-cols-3 gap-3">
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-600 mb-1">Tuition ($) *</label>
+                                    <input required type="number" min="0" step="0.01" value={bulkForm.tuition_fee}
+                                        onChange={e => setBulkForm({...bulkForm, tuition_fee: e.target.value})}
+                                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-600 mb-1">Boarding ($)</label>
+                                    <input type="number" min="0" step="0.01" value={bulkForm.boarding_fee}
+                                        onChange={e => setBulkForm({...bulkForm, boarding_fee: e.target.value})}
+                                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-600 mb-1">Activity ($)</label>
+                                    <input type="number" min="0" step="0.01" value={bulkForm.activity_fee}
+                                        onChange={e => setBulkForm({...bulkForm, activity_fee: e.target.value})}
+                                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-medium text-gray-600 mb-1">Due Date *</label>
+                                <input required type="date" value={bulkForm.due_date}
+                                    onChange={e => setBulkForm({...bulkForm, due_date: e.target.value})}
+                                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                            </div>
+
+                            <div className="flex gap-3 pt-2">
+                                <button type="button" onClick={() => setShowBulkModal(false)}
+                                    className="flex-1 border border-gray-200 text-gray-600 py-2 rounded-lg text-sm hover:bg-gray-50">
+                                    Cancel
+                                </button>
+                                <button type="submit" disabled={saving}
+                                    className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg text-sm font-medium disabled:opacity-50">
+                                    {saving ? 'Creating...' : 'Create Bulk Invoices'}
                                 </button>
                             </div>
                         </form>

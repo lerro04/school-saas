@@ -5,11 +5,14 @@ use App\Http\Controllers\Api\TenantController;
 use App\Http\Controllers\Api\StudentController;
 use App\Http\Controllers\Api\FeeInvoiceController;
 use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\RevenueController;
+use App\Http\Controllers\Api\ExpenseController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\StaffController;
 use App\Http\Controllers\Api\PayrollController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\PaynowController;
+use App\Http\Controllers\Api\SchoolClassController;
 use App\Http\Controllers\Api\Portal\AuthController as PortalAuthController;
 use App\Http\Controllers\Api\Portal\AssignmentController as PortalAssignmentController;
 use App\Http\Controllers\Api\Portal\SubmissionController as PortalSubmissionController;
@@ -46,6 +49,7 @@ Route::apiResource('payroll', PayrollController::class);
 
     // Students
     Route::apiResource('students', StudentController::class);
+    Route::apiResource('classes', SchoolClassController::class);
 
     // Fee Invoices
     Route::post('/fee-invoices/bulk', [FeeInvoiceController::class, 'bulkCreate']);
@@ -54,13 +58,23 @@ Route::apiResource('payroll', PayrollController::class);
     // Payments
     Route::apiResource('payments', PaymentController::class)->only(['index', 'store', 'show']);
 
+    // Revenue
+    Route::apiResource('revenues', RevenueController::class);
+
+    // Expenses
+    Route::apiResource('expenses', ExpenseController::class);
+    Route::post('/expenses/approve-bulk', [ExpenseController::class, 'approveBulk']);
+
     // Reports
 Route::prefix('reports')->group(function () {
-    Route::get('/dashboard',            [ReportController::class, 'dashboard']);
-    Route::get('/fee-collection',       [ReportController::class, 'feeCollection']);
-    Route::get('/debtors',              [ReportController::class, 'debtors']);
-    Route::get('/payroll-summary',      [ReportController::class, 'payrollSummary']);
-    Route::get('/collections-by-method',[ReportController::class, 'collectionsByMethod']);
+    Route::get('/dashboard',                [ReportController::class, 'dashboard']);
+    Route::get('/fee-collection',           [ReportController::class, 'feeCollection']);
+    Route::get('/debtors',                  [ReportController::class, 'debtors']);
+    Route::get('/payroll-summary',          [ReportController::class, 'payrollSummary']);
+    Route::get('/collections-by-method',    [ReportController::class, 'collectionsByMethod']);
+    Route::get('/financial-summary',        [ReportController::class, 'financialSummary']);
+    Route::get('/comprehensive-financial',  [ReportController::class, 'comprehensiveFinancial']);
+    Route::get('/expense-status',           [ReportController::class, 'expenseStatus']);
 });
 
     // Super admin only

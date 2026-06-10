@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import PortalLayout from '../PortalLayout';
 import portalApi from '../../../services/portalApi';
-import { Lock, AlertCircle } from 'lucide-react';
+import { Lock } from 'lucide-react';
 
 
 export default function StudentResults() {

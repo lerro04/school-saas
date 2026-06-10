@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { usePortalAuth } from '../../context/PortalAuthContext';
-import { LayoutDashboard, BookOpen, TrendingUp, DollarSign, Megaphone, LogOut, ClipboardList, Users } from 'lucide-react';
+import { LayoutDashboard, BookOpen, TrendingUp, DollarSign, Megaphone, LogOut, ClipboardList, Users, UserCheck } from 'lucide-react';
 
 export default function PortalLayout({ children }) {
     const { user, logout } = usePortalAuth();
@@ -16,8 +16,6 @@ export default function PortalLayout({ children }) {
         parent:  'bg-blue-600',
         teacher: 'bg-purple-600',
     };
-
-    import { LayoutDashboard, BookOpen, TrendingUp, DollarSign, Megaphone, LogOut, ClipboardList, Users } from 'lucide-react';
 
 const navLinks = {
     student: [
@@ -80,7 +78,7 @@ const navLinks = {
             <div className="flex-1 flex flex-col overflow-hidden">
                 <header className="bg-white shadow-sm px-6 py-4 flex items-center justify-between">
                     <h2 className="font-semibold text-gray-700">
-                        {localStorage.getItem('portal_tenant')} — {user?.role} portal
+                        {localStorage.getItem('portal_tenant')} - {user?.role} portal
                     </h2>
                     <span className={`text-xs text-white px-3 py-1 rounded-full capitalize ${roleColor[user?.role]}`}>
                         {user?.role}
