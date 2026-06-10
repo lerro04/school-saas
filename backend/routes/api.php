@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\RevenueController;
 use App\Http\Controllers\Api\ExpenseController;
 use App\Http\Controllers\Api\BudgetController;
+use App\Http\Controllers\Api\AssetController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\StaffController;
 use App\Http\Controllers\Api\PayrollController;
@@ -71,6 +72,10 @@ Route::apiResource('payroll', PayrollController::class);
     Route::post('/budgets/approve-bulk', [BudgetController::class, 'approveBulk']);
     Route::put('/budgets/{id}/spending', [BudgetController::class, 'updateSpending']);
     Route::get('/budgets-summary', [BudgetController::class, 'summary']);
+
+    // Assets
+    Route::apiResource('assets', AssetController::class);
+    Route::get('/assets-summary', [AssetController::class, 'summary']);
 
     // Reports
 Route::prefix('reports')->group(function () {

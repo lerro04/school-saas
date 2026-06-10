@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LayoutDashboard, Users, DollarSign, UserCheck, LogOut, ChevronLeft, ChevronRight, School, TrendingUp, TrendingDown, BarChart3 } from 'lucide-react';
+import { LayoutDashboard, Users, DollarSign, UserCheck, LogOut, ChevronLeft, ChevronRight, School, TrendingUp, TrendingDown, BarChart3, Package } from 'lucide-react';
 
 const navItems = [
     { path: '/',              label: 'Dashboard',      icon: LayoutDashboard },
@@ -11,6 +11,7 @@ const navItems = [
     { path: '/revenue',       label: 'Revenue',        icon: TrendingUp },
     { path: '/expenses',      label: 'Expenses',       icon: TrendingDown },
     { path: '/budgets',       label: 'Budgets',        icon: TrendingUp },
+    { path: '/assets',        label: 'Assets',         icon: Package },
     { path: '/reports/financial', label: 'Reports',   icon: BarChart3 },
     { path: '/staff',         label: 'Staff',          icon: UserCheck },
 ];
