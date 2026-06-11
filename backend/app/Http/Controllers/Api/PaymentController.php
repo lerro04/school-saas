@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
 use App\Models\FeeInvoice;
+use App\Models\Revenue;
 use Illuminate\Http\Request;
 
 class PaymentController extends Controller
@@ -73,6 +74,21 @@ class PaymentController extends Controller
             'status'      => $newStatus,
         ]);
 
+        // Auto-record as Revenue
+        Revenue::create([
+            'reference_number'      => $this->generateRevenueReference(),
+            'source'                => 'tuition',
+            'amount'                => $data['amount'],
+            'student_id'            => $invoice->student_id,
+            'description'           => "Fee payment from receipt {$payment->receipt_number}",
+            'payment_method'        => $data['method'],
+            'transaction_reference' => $data['transaction_reference'] ?? $payment->receipt_number,
+            'received_by'           => auth()->user()->id,
+            'status'                => 'confirmed',
+            'revenue_date'          => $data['paid_at'],
+            'notes'                 => "Auto-recorded from payment: {$data['notes']}",
+        ]);
+
         return response()->json([
             'payment'        => $payment->load(['student', 'invoice']),
             'receipt_number' => $payment->receipt_number,
@@ -98,5 +114,14 @@ class PaymentController extends Controller
             ->orderBy('receipt_number', 'desc')->first();
         $next = $last ? (intval(substr($last->receipt_number, 7)) + 1) : 1;
         return "RCP{$year}" . str_pad($next, 5, '0', STR_PAD_LEFT);
+    }
+
+    private function generateRevenueReference()
+    {
+        $year = date('Y');
+        $last = Revenue::where('reference_number', 'like', "REV{$year}%")
+            ->orderBy('reference_number', 'desc')->first();
+        $next = $last ? (intval(substr($last->reference_number, 7)) + 1) : 1;
+        return "REV{$year}" . str_pad($next, 5, '0', STR_PAD_LEFT);
     }
 }

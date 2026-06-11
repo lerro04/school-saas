@@ -94,6 +94,7 @@ Route::prefix('reports')->group(function () {
     Route::get('/financial-summary',        [ReportController::class, 'financialSummary']);
     Route::get('/comprehensive-financial',  [ReportController::class, 'comprehensiveFinancial']);
     Route::get('/expense-status',           [ReportController::class, 'expenseStatus']);
+    Route::get('/financial-transactions',   [ReportController::class, 'financialTransactions']);
 });
 
     // Super admin only

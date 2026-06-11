@@ -103,7 +103,11 @@ class ExpenseController extends Controller
         ]);
 
         Expense::whereIn('id', $data['expense_ids'])
-            ->update(['status' => 'approved', 'approved_by' => auth()->user()->id]);
+            ->get()
+            ->each(fn($expense) => $expense->update([
+                'status' => 'approved',
+                'approved_by' => auth()->user()->id,
+            ]));
 
         return response()->json(['message' => 'Expenses approved successfully']);
     }

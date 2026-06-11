@@ -10,8 +10,10 @@ use App\Models\Payment;
 use App\Models\Payroll;
 use App\Models\Revenue;
 use App\Models\Expense;
+use App\Models\FinancialTransaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class ReportController extends Controller
 {
@@ -43,11 +45,20 @@ class ReportController extends Controller
             ->get()
             ->map(fn($p) => [
                 'receipt'    => $p->receipt_number,
-                'student'    => $p->student->first_name . ' ' . $p->student->last_name,
+                'student'    => $p->student
+                    ? $p->student->first_name . ' ' . $p->student->last_name
+                    : 'Unknown student',
                 'amount'     => $p->amount,
                 'method'     => $p->method,
                 'paid_at'    => $p->paid_at,
             ]);
+
+        $recentTransactions = Schema::hasTable('financial_transactions')
+            ? FinancialTransaction::orderBy('occurred_on', 'desc')
+                ->orderBy('id', 'desc')
+                ->limit(5)
+                ->get()
+            : collect();
 
         return response()->json([
             'students' => [
@@ -71,6 +82,7 @@ class ReportController extends Controller
                 'last_month' => $lastMonth,
             ],
             'recent_payments' => $recentPayments,
+            'recent_transactions' => $recentTransactions,
         ]);
     }
 
@@ -312,5 +324,39 @@ class ReportController extends Controller
         )->groupBy('status')->get();
 
         return response()->json($data);
+    }
+
+    public function financialTransactions(Request $request)
+    {
+        $request->validate([
+            'transaction_type' => 'nullable|in:income,expense',
+            'status' => 'nullable|string',
+            'date_from' => 'nullable|date',
+            'date_to' => 'nullable|date',
+        ]);
+
+        $query = FinancialTransaction::query();
+
+        if ($request->transaction_type) {
+            $query->where('transaction_type', $request->transaction_type);
+        }
+
+        if ($request->status) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->date_from) {
+            $query->whereDate('occurred_on', '>=', $request->date_from);
+        }
+
+        if ($request->date_to) {
+            $query->whereDate('occurred_on', '<=', $request->date_to);
+        }
+
+        return response()->json(
+            $query->orderBy('occurred_on', 'desc')
+                ->orderBy('id', 'desc')
+                ->paginate(20)
+        );
     }
 }

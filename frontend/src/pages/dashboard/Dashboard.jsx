@@ -24,17 +24,29 @@ function StatCard({ label, value, sub, color, icon }) {
 export default function Dashboard() {
     const [data, setData]       = useState(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError]     = useState('');
 
     useEffect(() => {
         api.get('/reports/dashboard')
             .then(r => setData(r.data))
-            .catch(console.error)
+            .catch(err => {
+                console.error(err);
+                setError(err.response?.data?.message ?? 'Failed to load dashboard data');
+            })
             .finally(() => setLoading(false));
     }, []);
 
     if (loading) return (
         <Layout>
             <div className="flex items-center justify-center h-64 text-gray-400">Loading dashboard...</div>
+        </Layout>
+    );
+
+    if (error) return (
+        <Layout>
+            <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg p-4">
+                {error}
+            </div>
         </Layout>
     );
 
