@@ -143,5 +143,22 @@ Route::get('/announcements/{id}', [PortalAnnouncementController::class, 'show'])
         // Parent portal
         Route::get('/parent/dashboard',  [ParentPortalController::class, 'dashboard']);
         Route::post('/parent/pay-fees',  [ParentPortalController::class, 'payFees']);
+
+        Route::get('/setup-tenant', function () {
+    $tenant = \App\Models\Tenant::create(['id' => 'harare-high']);
+    $tenant->domains()->create(['domain' => 'chinhoyi']);
+    
+    tenancy()->initialize($tenant);
+    
+    \App\Models\User::create([
+        'name' => 'william',
+        'email' => 'william@teacher.hararehigh.ac.zw',
+        'password' => bcrypt('password123'),
+    ]);
+    
+    tenancy()->end();
+    
+    return response()->json(['message' => 'Tenant and user created successfully']);
+});
     });
 });
