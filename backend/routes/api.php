@@ -141,26 +141,21 @@ Route::get('/announcements/{id}', [PortalAnnouncementController::class, 'show'])
         Route::post('/student/pay-fees', [StudentPortalController::class, 'payFees']);
 
         // Parent portal
-        Route::get('/parent/dashboard',  [ParentPortalController::class, 'dashboard']);
+       Route::get('/parent/dashboard',  [ParentPortalController::class, 'dashboard']);
         Route::post('/parent/pay-fees',  [ParentPortalController::class, 'payFees']);
-
-        
     });
-    // TEMP: remove after use
+});
+
+// TEMP: remove after use
 Route::get('/setup-tenant', function () {
     $tenant = \App\Models\Tenant::create(['id' => 'harare-high']);
     $tenant->domains()->create(['domain' => 'harare-high']);
-
     tenancy()->initialize($tenant);
-
     \App\Models\User::create([
         'name' => 'William',
         'email' => 'william@teacher.hararehigh.ac.zw',
         'password' => bcrypt('password123'),
     ]);
-
     tenancy()->end();
-
     return response()->json(['message' => 'Done']);
-});
 });
