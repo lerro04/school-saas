@@ -27,12 +27,15 @@ use App\Http\Controllers\Api\Portal\ParentPortalController;
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login',    [AuthController::class, 'login']);
+    Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+    Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 });
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/auth/me',      [AuthController::class, 'me']);
+    Route::post('/auth/change-password', [AuthController::class, 'changePassword']);
 
     // Paynow
 Route::prefix('paynow')->group(function () {
@@ -110,11 +113,14 @@ Route::prefix('portal')->middleware('portal.tenancy')->group(function () {
 
     // Public portal auth
     Route::post('/login',  [PortalAuthController::class, 'login']);
+    Route::post('/forgot-password', [PortalAuthController::class, 'forgotPassword']);
+    Route::post('/reset-password', [PortalAuthController::class, 'resetPassword']);
 
     // Protected portal routes
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [PortalAuthController::class, 'logout']);
         Route::get('/me',      [PortalAuthController::class, 'me']);
+        Route::post('/change-password', [PortalAuthController::class, 'changePassword']);
 
         // Announcements (all portal users)
         Route::get('/announcements', [PortalAnnouncementController::class, 'index']);
@@ -146,7 +152,11 @@ Route::get('/announcements/{id}', [PortalAnnouncementController::class, 'show'])
     });
 });
 
-// TEMP: remove after use
+// ⚠️ SECURITY RISK: This route should be removed in production
+// It creates a test user with hardcoded credentials and should NEVER be exposed
+// Commented out for security. Use the password reset command instead:
+// php artisan user:reset-password your-email@example.com newpassword123
+/*
 Route::get('/setup-tenant', function () {
     $tenant = \App\Models\Tenant::create(['id' => 'harare-high']);
     $tenant->domains()->create(['domain' => 'harare-high']);
@@ -159,3 +169,4 @@ Route::get('/setup-tenant', function () {
     tenancy()->end();
     return response()->json(['message' => 'Done']);
 });
+*/
