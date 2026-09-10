@@ -129,4 +129,119 @@ class AuthController extends Controller
             'permissions' => $user->getAllPermissions()->pluck('name'),
         ]);
     }
+
+    /**
+     * Request a password reset link
+     */
+    public function forgotPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'tenant_id' => 'required|string|exists:tenants,id',
+        ]);
+
+        $tenant = Tenant::findOrFail($request->tenant_id);
+        tenancy()->initialize($tenant);
+
+        $user = User::where('email', $request->email)->first();
+
+        tenancy()->end();
+
+        if (!$user) {
+            // Don't reveal whether the email exists for security reasons
+            return response()->json([
+                'message' => 'If an account exists with this email, a password reset link will be sent.',
+            ]);
+        }
+
+        // TODO: Implement actual email sending with password reset link
+        // For now, return a token that can be used to reset password
+        $token = \Illuminate\Support\Str::random(60);
+        
+        // Store reset token in cache (expires in 1 hour)
+        cache()->put("password_reset_{$token}", $user->email, now()->addHour());
+
+        return response()->json([
+            'message' => 'If an account exists with this email, a password reset link will be sent.',
+            'reset_token' => $token, // In production, send this via email instead
+        ]);
+    }
+
+    /**
+     * Reset password with token
+     */
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'token' => 'required|string',
+            'email' => 'required|email',
+            'password' => 'required|string|min:8|confirmed',
+            'tenant_id' => 'required|string|exists:tenants,id',
+        ]);
+
+        $tenant = Tenant::findOrFail($request->tenant_id);
+        tenancy()->initialize($tenant);
+
+        // Verify token
+        $email = cache()->get("password_reset_{$request->token}");
+
+        if (!$email || $email !== $request->email) {
+            tenancy()->end();
+            throw ValidationException::withMessages([
+                'token' => ['Invalid or expired password reset token.'],
+            ]);
+        }
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            tenancy()->end();
+            throw ValidationException::withMessages([
+                'email' => ['User not found.'],
+            ]);
+        }
+
+        // Update password
+        $user->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        // Invalidate the token
+        cache()->forget("password_reset_{$request->token}");
+
+        tenancy()->end();
+
+        return response()->json([
+            'message' => 'Password reset successfully. You can now login with your new password.',
+        ]);
+    }
+
+    /**
+     * Change password for authenticated user
+     */
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required|string',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user = $request->user();
+
+        // Verify current password
+        if (!Hash::check($request->current_password, $user->password)) {
+            throw ValidationException::withMessages([
+                'current_password' => ['Current password is incorrect.'],
+            ]);
+        }
+
+        // Update password
+        $user->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        return response()->json([
+            'message' => 'Password changed successfully.',
+        ]);
+    }
 }
