@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: school-saas-backend
+    runtime: docker
+    rootDir: backend
+    envVars:
+      # Override Render's auto-provisioned DATABASE_URL
+      - key: DATABASE_URL
+        scope: build
+        value: ""
+      - key: DB_CONNECTION
+        value: pgsql
+      # Use individual variables instead of DATABASE_URL
+      - key: DB_URL
+        scope: build
+        value: ""
