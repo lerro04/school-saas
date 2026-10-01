@@ -22,6 +22,7 @@ use App\Http\Controllers\Api\Portal\SubmissionController as PortalSubmissionCont
 use App\Http\Controllers\Api\Portal\AnnouncementController as PortalAnnouncementController;
 use App\Http\Controllers\Api\Portal\StudentPortalController;
 use App\Http\Controllers\Api\Portal\ParentPortalController;
+use Illuminate\Support\Facades\Artisan;
 
 // Public auth routes
 Route::prefix('auth')->group(function () {
@@ -149,14 +150,38 @@ Route::get('/announcements/{id}', [PortalAnnouncementController::class, 'show'])
 // Bootstrap route - creates initial tenant and admin user
 // REMOVE AFTER FIRST USE - This is for initial setup only
 Route::get('/setup-tenant', function () {
-    $tenant = \App\Models\Tenant::create(['id' => 'harare-high']);
-    $tenant->domains()->create(['domain' => 'harare-high']);
-    tenancy()->initialize($tenant);
-    \App\Models\User::create([
-        'name' => 'William',
-        'email' => 'william@teacher.hararehigh.ac.zw',
-        'password' => bcrypt('password123'),
-    ]);
-    tenancy()->end();
-    return response()->json(['message' => 'Tenant and admin user created successfully. Login credentials: Email: william@teacher.hararehigh.ac.zw, Password: password123']);
+    try {
+        // Create the tenant
+        $tenant = \App\Models\Tenant::create(['id' => 'harare-high']);
+        $tenant->domains()->create(['domain' => 'harare-high']);
+        
+        // Initialize tenancy
+        tenancy()->initialize($tenant);
+        
+        // Run tenant migrations
+        Artisan::call('migrate', [
+            '--path' => 'database/migrations/tenant',
+            '--force' => true,
+        ]);
+        
+        // Create admin user for this tenant
+        \App\Models\User::create([
+            'name' => 'William',
+            'email' => 'william@teacher.hararehigh.ac.zw',
+            'password' => bcrypt('password123'),
+        ]);
+        
+        tenancy()->end();
+        
+        return response()->json([
+            'message' => 'Tenant and admin user created successfully. All tables migrated.',
+            'credentials' => [
+                'email' => 'william@teacher.hararehigh.ac.zw',
+                'password' => 'password123'
+            ]
+        ]);
+    } catch (\Exception $e) {
+        tenancy()->end();
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
 });
